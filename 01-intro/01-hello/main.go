@@ -14,7 +14,7 @@ func f(s string) {
 
 func main() {
 	// Direct call
-	f("computation-1")
+	f("direct call")
 
 	// TODO: write goroutine with different variants for function call.
 
