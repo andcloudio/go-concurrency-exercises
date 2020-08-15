@@ -5,12 +5,17 @@ import (
 )
 
 func main() {
-	//TODO: modify the program to print
-	// goroutine output "hello" deterministically.
+	//TODO: modify the program
+	// to print the value as 1
+	// deterministically.
+
+	var data int
 
 	go func() {
-		fmt.Println("hello")
+		data++
 	}()
+
+	fmt.Printf("the value of data is %v\n", data)
 
 	fmt.Println("Done..")
 }

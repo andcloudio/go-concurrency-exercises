@@ -1,14 +1,11 @@
-// What will be printed when the code below is executed?
-// And fix the issue to assure that `len(m)` is printed as 10.
-
 package main
 
 import (
 	"sync"
 )
 
-// what is output
-// fix the issue
+// What will be printed when the code below is executed?
+// And fix the issue to assure that `len(m)` is printed as 10.
 
 func main() {
 	m := make(map[int]int)
