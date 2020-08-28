@@ -79,3 +79,8 @@ func main() {
 
 	fmt.Println(<-out)
 }
+
+// guidelines for pipeline construction
+
+// stages close their outbound channels when all the send operations are done.
+// stages keep receiving values from inbound channels until those channels are closed or the senders are unblocked.

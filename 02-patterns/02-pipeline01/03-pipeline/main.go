@@ -65,5 +65,4 @@ func main() {
 }
 
 // Stages close their outbound channels when all the send operations are done.
-
 // Stages keep receiving values from inbound channels until those channels are closed.

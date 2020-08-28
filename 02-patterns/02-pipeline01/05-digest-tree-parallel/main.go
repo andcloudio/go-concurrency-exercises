@@ -11,49 +11,48 @@ import (
 	"sync"
 )
 
+// 3 stage pipeline
+// walk the tree -> read and digest the files -> collect the digest
+
 type result struct {
 	path string
 	sum  [md5.Size]byte
 	err  error
 }
 
-func sumFiles(done <-chan struct{}, root string) (<-chan result, <-chan error) {
-	c := make(chan result)
+func walkFiles(done <-chan struct{}, root string) (<-chan string, <-chan error) {
+	paths := make(chan string)
 	errc := make(chan error, 1)
-	var wg sync.WaitGroup
 
 	go func() {
-		err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		defer close(paths)
+		errc <- filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
 			}
 			if !info.Mode().IsRegular() {
 				return nil
 			}
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-				data, err := ioutil.ReadFile(path)
-				select {
-				case c <- result{path, md5.Sum(data), err}:
-				case <-done:
-					return
-				}
-			}()
 			select {
+			case paths <- path:
 			case <-done:
 				return fmt.Errorf("walk cancelled")
-			default:
-				return nil
 			}
+			return nil
 		})
-		go func() {
-			wg.Wait()
-			close(c)
-		}()
-		errc <- err
 	}()
-	return c, errc
+	return paths, errc
+}
+
+func digester(done <-chan struct{}, paths <-chan string, c chan<- result) {
+	for path := range paths {
+		data, err := ioutil.ReadFile(path)
+		select {
+		case c <- result{path, md5.Sum(data), err}:
+		case <-done:
+			return
+		}
+	}
 }
 
 // MD5All reads all the files in the file tree rooted at
@@ -65,7 +64,29 @@ func MD5All(root string) (map[string][md5.Size]byte, error) {
 
 	defer close(done)
 
-	c, errc := sumFiles(done, root)
+	paths, errc := walkFiles(done, root)
+
+	c := make(chan result)
+	var wg sync.WaitGroup
+
+	const numDigesters = 20
+
+	wg.Add(numDigesters)
+	for i := 0; i < numDigesters; i++ {
+		go func() {
+			digester(done, paths, c)
+			wg.Done()
+		}()
+	}
+
+	go func() {
+		wg.Wait()
+		close(c)
+	}()
+
+	if err := <-errc; err != nil {
+		return nil, err
+	}
 
 	m := make(map[string][md5.Size]byte)
 	for r := range c {
@@ -74,9 +95,7 @@ func MD5All(root string) (map[string][md5.Size]byte, error) {
 		}
 		m[r.path] = r.sum
 	}
-	if err := <-errc; err != nil {
-		return nil, err
-	}
+
 	return m, nil
 }
 
