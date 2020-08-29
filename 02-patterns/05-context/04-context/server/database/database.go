@@ -1,4 +1,4 @@
-package sqlite
+package database
 
 import (
 	"context"
@@ -55,12 +55,12 @@ func Query(ctx context.Context, db *sql.DB) (Catalog, error) {
 	if err != nil {
 		return nil, err
 	}
-	c := make(Catalog)
+	catalog := make(Catalog)
 	var product string
 	var price dollars
 	for rows.Next() {
 		rows.Scan(&product, &price)
-		c[product] = price
+		catalog[product] = price
 	}
-	return c, nil
+	return catalog, nil
 }

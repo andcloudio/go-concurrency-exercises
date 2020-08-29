@@ -16,29 +16,30 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/andcloudio/go-concurrency-exercises/02-patterns/05-context/01-context/server/sqlite"
+	"github.com/andcloudio/go-concurrency-exercises/02-patterns/05-context/04-context/server/database"
 )
 
-type database struct {
+type catalogDB struct {
 	db *sql.DB
 }
 
 func main() {
-	var d database
+	var dbinstance catalogDB
 	var err error
 
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	d.db, err = sqlite.Create(ctx)
+	dbinstance.db, err = database.Create(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	http.HandleFunc("/search", d.handleFunc)
+	http.HandleFunc("/search", dbinstance.handleFunc)
 	log.Fatal(http.ListenAndServe("localhost:8000", nil))
 }
 
-func (db database) handleFunc(w http.ResponseWriter, req *http.Request) {
+func (db catalogDB) handleFunc(w http.ResponseWriter, req *http.Request) {
 	var (
 		ctx    context.Context
 		cancel context.CancelFunc
@@ -53,7 +54,7 @@ func (db database) handleFunc(w http.ResponseWriter, req *http.Request) {
 	}
 	defer cancel()
 
-	catalog, err := sqlite.Query(ctx, db.db)
+	catalog, err := database.Query(ctx, db.db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		fmt.Println(err)
@@ -66,6 +67,5 @@ func (db database) handleFunc(w http.ResponseWriter, req *http.Request) {
 	}
 	fmt.Printf("%s\n", data)
 
-	fmt.Println(data)
 	fmt.Fprintf(w, "%s", data)
 }
