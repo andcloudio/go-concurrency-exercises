@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func f(s string) {
+func fun(s string) {
 	for i := 0; i < 3; i++ {
 		fmt.Println(s)
 		time.Sleep(1 * time.Millisecond)
@@ -14,7 +14,7 @@ func f(s string) {
 
 func main() {
 	// Direct call
-	f("direct call")
+	fun("direct call")
 
 	// TODO: write goroutine with different variants for function call.
 
