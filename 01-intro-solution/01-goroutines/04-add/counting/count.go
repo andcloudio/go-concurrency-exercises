@@ -64,7 +64,7 @@ func AddConcurrent(numbers []int) int64 {
 				partSum += int64(n)
 			}
 
-			// Add part sum to cummulative sum
+			// Add sum of each part to cummulative sum
 			atomic.AddInt64(&sum, partSum)
 		}(part)
 	}
