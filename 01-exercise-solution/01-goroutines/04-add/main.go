@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/andcloudio/go-concurrency-exercises/01-intro/01-goroutines/04-add/counting"
+	"go-concurrency-exercises/01-exercise/01-goroutines/04-add/counting"
 )
 
 func main() {
 	numbers := counting.GenerateNumbers(1e7)
 
 	t := time.Now()
-	_ = counting.Add(numbers)
-	fmt.Printf("Sequential Add took: %s\n", time.Since(t))
+	sum := counting.Add(numbers)
+	fmt.Printf("Sequential Add, Sum: %d,  Time Taken: %s\n", sum, time.Since(t))
 
 	t = time.Now()
-	_ = counting.AddConcurrent(numbers)
-	fmt.Printf("Concurrent Add took: %s\n", time.Since(t))
+	sum = counting.AddConcurrent(numbers)
+	fmt.Printf("Concurrent Add, Sum: %d,  Time Taken: %s\n", sum, time.Since(t))
 }
