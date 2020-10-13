@@ -35,9 +35,9 @@ func Add(numbers []int) int64 {
 func AddConcurrent(numbers []int) int64 {
 
 	// Utilize all cores on machine
-	runtime.GOMAXPROCS(runtime.NumCPU())
-
 	numOfCores := runtime.NumCPU()
+	runtime.GOMAXPROCS(numOfCores)
+
 	var sum int64
 	max := len(numbers)
 
