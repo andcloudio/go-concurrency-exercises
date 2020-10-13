@@ -15,7 +15,7 @@ import (
 var db *sql.DB
 
 func slowQuery(ctx context.Context) error {
-	_, err := db.ExecContext(ctx, "SELECT pg_sleep(2)")
+	_, err := db.ExecContext(ctx, "SELECT pg_sleep(5)")
 	return err
 }
 
@@ -38,7 +38,9 @@ func slowHandler(w http.ResponseWriter, req *http.Request) {
 func main() {
 	var err error
 
-	db, err = sql.Open("postgres", "postgres://user:pa$$word@localhost/example")
+	connstr := "host=localhost port=5432 user=alice password=pa$$word  dbname=wonderland sslmode=disable"
+
+	db, err = sql.Open("postgres", connstr)
 	if err != nil {
 		log.Fatal(err)
 	}
