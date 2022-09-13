@@ -7,6 +7,19 @@ func main() {
 	// writes data into channel and
 	// closes the channel when done.
 
+	owner := func() <-chan int {
+		ch := make(chan int)
+
+		go func() {
+			defer close(ch)
+			for i := 0; i <= 3; i++ {
+				ch <- i
+			}
+		}()
+
+		return ch
+	}
+
 	consumer := func(ch <-chan int) {
 		// read values from channel
 		for v := range ch {

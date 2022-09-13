@@ -12,12 +12,17 @@ func main() {
 
 	var balance int
 	var wg sync.WaitGroup
+	var m sync.Mutex
 
 	deposit := func(amount int) {
+		m.Lock()
+		defer m.Unlock()
 		balance += amount
 	}
 
 	withdrawal := func(amount int) {
+		m.Lock()
+		defer m.Unlock()
 		balance -= amount
 	}
 
@@ -46,3 +51,5 @@ func main() {
 	wg.Wait()
 	fmt.Println(balance)
 }
+
+// data race happening here

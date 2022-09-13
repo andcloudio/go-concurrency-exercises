@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -15,6 +14,11 @@ func main() {
 
 	// TODO: implement timeout for recv on channel ch
 
-	m := <-ch
-	fmt.Println(m)
+	select {
+	case m := <-ch:
+		println(m)
+	case <-time.After(time.Second * 1):
+		println(" timeout")
+	}
+
 }
