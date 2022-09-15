@@ -47,7 +47,7 @@ func main() {
 	// writes changes to sharedRsc
 	sharedRsc["rsc1"] = "foo"
 	sharedRsc["rsc2"] = "bar"
-	cond.Broadcast() // what id signal?
+	cond.Broadcast() // what if signal?
 	cond.L.Unlock()
 
 	wg.Wait()
