@@ -1,10 +1,12 @@
 package main
 
 import (
+	"context"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 func main() {
@@ -15,7 +17,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	req = req.WithContext(ctx)
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Println("ERROR:", err)
