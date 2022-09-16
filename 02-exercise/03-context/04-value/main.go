@@ -15,7 +15,6 @@ var db database = database{
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-
 	processRequest(ctx, "jane")
 }
 

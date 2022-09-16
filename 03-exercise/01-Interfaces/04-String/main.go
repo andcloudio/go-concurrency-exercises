@@ -9,6 +9,10 @@ type user struct {
 
 // TODO: Implement custom formating for user struct values.
 
+func (user user) String() string {
+	return fmt.Sprintf("users name: %s and email: %s ", user.name, user.email)
+}
+
 func main() {
 	u := user{
 		name:  "John Doe",
