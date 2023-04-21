@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	ch := make(chan int)
+	ch := make(chan int, 6)
 
 	go func() {
 		defer close(ch)
