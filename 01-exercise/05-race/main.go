@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+//Identify race
+//go build -race main.go 
+//./main.go
+
 func main() {
 	start := time.Now()
 	var t *time.Timer
